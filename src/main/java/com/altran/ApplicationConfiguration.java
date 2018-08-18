@@ -2,12 +2,16 @@ package com.altran;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.concurrent.ConcurrentMapCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by guzmle on 17/8/18.
@@ -36,5 +40,14 @@ public class ApplicationConfiguration {
         builder.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
         return builder;
+    }
+
+
+    @Bean
+    public CacheManager cacheManager() {
+        List<ConcurrentMapCache> caches = Arrays.asList(new ConcurrentMapCache("packages"));
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+        cacheManager.setCaches(caches);
+        return cacheManager;
     }
 }
