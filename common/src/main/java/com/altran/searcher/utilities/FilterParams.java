@@ -8,12 +8,6 @@ public class FilterParams {
     private int limit;
     private String lang;
 
-    public FilterParams() {
-        this.offset = 0;
-        this.limit = 0;
-        this.lang = "ca";
-    }
-
     public int getOffset() {
         return offset;
     }

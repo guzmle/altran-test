@@ -9,6 +9,7 @@ public class ResultDTO {
     private int totalCount;
     private int count;
     private int offset;
+    private String lang;
 
     List<PackageDTO> packages;
 
@@ -42,5 +43,13 @@ public class ResultDTO {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
     }
 }

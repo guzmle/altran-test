@@ -13,6 +13,4 @@ public interface PackageService {
      * @return lista de paquetes segun el idioma
      */
     ResultDTO getPackages(FilterParams filter);
-
-    void updatePackageCached();
 }
