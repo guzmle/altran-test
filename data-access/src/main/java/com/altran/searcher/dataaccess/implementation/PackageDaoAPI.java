@@ -21,7 +21,7 @@ import java.util.List;
  * Clase que se encarga de consultar la fuente de datos para obtener la informacion necesaria
  */
 @Component
-public class PackageDaoImpl implements PackageDao {
+public class PackageDaoAPI implements PackageDao {
 
     private final RestTemplate restTemplate;
 
@@ -29,7 +29,7 @@ public class PackageDaoImpl implements PackageDao {
     private String apiUrl;
 
     @Autowired
-    public PackageDaoImpl(RestTemplate restTemplate) {
+    public PackageDaoAPI(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

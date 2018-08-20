@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 @RunWith(SpringRunner.class)
-public class PackageServiceImplTest {
+public class PackageServiceDaoAPITest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -49,7 +49,7 @@ public class PackageServiceImplTest {
     private ErrorMessage error;
 
     @InjectMocks
-    private PackageDaoImpl dao;
+    private PackageDaoAPI dao;
 
     private Properties prop;
     private int maxItems;

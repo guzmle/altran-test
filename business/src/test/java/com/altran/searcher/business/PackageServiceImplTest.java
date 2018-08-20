@@ -1,5 +1,6 @@
-package com.altran.searcher.business.implementation;
+package com.altran.searcher.business;
 
+import com.altran.searcher.business.PackageServiceImpl;
 import com.altran.searcher.business.domain.PackageDTO;
 import com.altran.searcher.dataaccess.PackageDao;
 import com.altran.searcher.dataaccess.domain.Organization;

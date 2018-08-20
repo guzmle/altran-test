@@ -1,14 +1,5 @@
 package com.altran.searcher.controllers;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
-
-import com.altran.searcher.business.domain.PackageDTO;
-import com.altran.searcher.utilities.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,15 +27,12 @@ public class MainRouterTest {
     @Autowired
     private TestRestTemplate template;
 
+    private UriComponentsBuilder packagesURI;
+
     @Before
     public void setUp() throws Exception {
-        this.base = new URL("http://localhost:" + port + "/");
-    }
-
-    @Test
-    public void getHello() throws Exception {
-        ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
-        assertThat(response.getBody(), equalTo("It is Working!"));
+        this.base = new URL("http://localhost:" + port + "/api/v1");
+        this.packagesURI = UriComponentsBuilder.fromUriString(this.base + "/packages");
     }
 
     @Test
@@ -50,22 +42,22 @@ public class MainRouterTest {
         headers.set("Accept-Language", "es");
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        String response = template.exchange(base.toString() + "package", HttpMethod.GET, entity, String.class)
-                .getBody();
-        assertThat(!response.contains("\"error\""), equalTo(true));
+        ResponseEntity<String> response = template.exchange(packagesURI.build().toString(), HttpMethod.GET, entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void getFindAllError() throws Exception {
-
-        ResponseEntity<String> response = template.getForEntity(base.toString() + "package?offset=-50", String.class);
+        String uri = packagesURI.queryParam("offset", -50).build().toString();
+        ResponseEntity<String> response = template.getForEntity(uri, String.class);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     public void getFindWithParams() throws Exception {
 
-        ResponseEntity<String> response = template.getForEntity(base.toString() + "package?offset=5&limit=10", String.class);
+        String uri = packagesURI.queryParam("offset", 5).queryParam("limit", 10).build().toString();
+        ResponseEntity<String> response = template.getForEntity(uri, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -77,9 +69,8 @@ public class MainRouterTest {
         headers.set("Accept-Language", "ca");
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        String response = template.exchange(base.toString() + "package", HttpMethod.GET, entity, String.class)
-                .getBody();
-        assertThat(!response.contains("\"error\""), equalTo(true));
+        ResponseEntity<String> response = template.exchange(packagesURI.build().toString(), HttpMethod.GET, entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -90,7 +81,7 @@ public class MainRouterTest {
         headers.set("Accept-Language", "ca");
 
         HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        ResponseEntity<String> response = template.exchange(base.toString() + "package", HttpMethod.OPTIONS, entity, String.class);
+        ResponseEntity<String> response = template.exchange(packagesURI.build().toString(), HttpMethod.OPTIONS, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 }

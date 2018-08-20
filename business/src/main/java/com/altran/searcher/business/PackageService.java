@@ -11,7 +11,7 @@ public interface PackageService {
 
     /**
      * Metodo que retorna la lista de paquetes
-     * @return lista de paquetes segun el idioma
+     * @return lista de paquetes segun los parametros establecidos
      */
     Mono<ResultDTO> getPackages(FilterParams filter);
 }

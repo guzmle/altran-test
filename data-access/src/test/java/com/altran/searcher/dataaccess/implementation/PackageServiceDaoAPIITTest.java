@@ -22,10 +22,10 @@ import static org.junit.Assert.assertTrue;
  * Clase que realiza las pruebas de integracion con el api
  */
 @RunWith(SpringRunner.class)
-public class PackageServiceImplITTest {
+public class PackageServiceDaoAPIITTest {
 
     @InjectMocks
-    private PackageDaoImpl dao;
+    private PackageDaoAPI dao;
 
     private Properties prop;
     private String apiUrl;

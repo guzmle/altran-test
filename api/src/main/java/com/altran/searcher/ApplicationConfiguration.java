@@ -33,7 +33,8 @@ public class ApplicationConfiguration {
     private static final String ALLOWED_METHODS = "GET, PUT, POST, DELETE, OPTIONS";
     private static final String ALLOWED_ORIGIN = "*";
     private static final String MAX_AGE = "3600";
-    private static final String CACHE_NAME = "packages";
+    public static final String CACHE_NAME = "packages";
+    public static final long TIME_REFRESH_CACHE = 60000;
 
     @Bean
     public Jackson2ObjectMapperBuilder objectMapperBuilder() {

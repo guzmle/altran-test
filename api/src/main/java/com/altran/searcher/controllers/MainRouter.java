@@ -30,6 +30,9 @@ public class MainRouter {
     @Value("${config.defaultLang}")
     private String defaultLang;
 
+    private static final String RESOURCES_ROOT = "/api/v1";
+    private static final String RESOURCES_PACKAGES = "/packages";
+
     /**
      * Metodo que configura los endpoints del sistema
      *
@@ -41,7 +44,9 @@ public class MainRouter {
 
         return RouterFunctions
                 .route(RequestPredicates.GET("/").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), mainHandler::hello)
-                .andRoute(RequestPredicates.GET("/package").and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                .andRoute(
+                        RequestPredicates.GET(RESOURCES_ROOT + RESOURCES_PACKAGES)
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         request -> mainHandler.findAll(formatFilters(request), formatAudit(request)));
     }
 
