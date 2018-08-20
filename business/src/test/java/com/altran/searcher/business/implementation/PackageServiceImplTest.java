@@ -1,11 +1,11 @@
 package com.altran.searcher.business.implementation;
 
 import com.altran.searcher.business.domain.PackageDTO;
-import com.altran.searcher.business.domain.ResultDTO;
 import com.altran.searcher.dataaccess.PackageDao;
 import com.altran.searcher.dataaccess.domain.Organization;
 import com.altran.searcher.dataaccess.domain.Package;
 import com.altran.searcher.dataaccess.domain.ResultAPI;
+import com.altran.searcher.exceptions.NotFoundException;
 import com.altran.searcher.utilities.FilterParams;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,9 +27,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doReturn;
 
-/**
- * Created by guzmle on 18/8/18.
- */
 @RunWith(SpringRunner.class)
 public class PackageServiceImplTest {
 
@@ -45,6 +42,7 @@ public class PackageServiceImplTest {
     private Properties prop;
     private int minLimit;
     private String defaultLang;
+    private int maxItems;
 
     private List<Package> listMock;
 
@@ -59,6 +57,7 @@ public class PackageServiceImplTest {
             prop.load(this.getClass().getClassLoader().getResourceAsStream("config.properties"));
             minLimit = Integer.parseInt(prop.getProperty("config.minLimit"));
             defaultLang = prop.getProperty("config.defaultLang");
+            maxItems = Integer.parseInt(prop.getProperty("config.maxItemsCache"));
         }
 
         ReflectionTestUtils.setField(service, "minLimit", String.valueOf(minLimit));
@@ -92,10 +91,12 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLang(defaultLang);
+        filter.setMaxItemsCache(maxItems);
 
-        ResultDTO data = service.getPackages(filter);
-        assertEquals(minLimit, data.getCount());
-        assertEquals(minLimit, data.getPackages().size());
+        service.getPackages(filter).subscribe(data -> {
+            assertEquals(minLimit, data.getCount());
+            assertEquals(minLimit, data.getPackages().size());
+        });
     }
 
 
@@ -112,10 +113,12 @@ public class PackageServiceImplTest {
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit + 1);
         filter.setLang(defaultLang);
+        filter.setMaxItemsCache(maxItems);
 
-        ResultDTO data = service.getPackages(filter);
-        assertEquals(minLimit, data.getCount());
-        assertEquals(minLimit, data.getPackages().size());
+        service.getPackages(filter).subscribe(data -> {
+            assertEquals(minLimit, data.getCount());
+            assertEquals(minLimit, data.getPackages().size());
+        });
     }
 
 
@@ -132,12 +135,12 @@ public class PackageServiceImplTest {
         filter.setOffset(1);
         filter.setLimit(minLimit);
         filter.setLang(defaultLang);
+        filter.setMaxItemsCache(maxItems);
 
-        ResultDTO data = service.getPackages(filter);
-        PackageDTO firtObject = data.getPackages().get(0);
-        assertEquals(minLimit - 1, data.getCount());
-        assertEquals(minLimit - 1, data.getPackages().size());
-        assertEquals(listMock.get(1).getCode(), firtObject.getCode());
+        service.getPackages(filter).subscribe(data -> {
+            PackageDTO firtObject = data.getPackages().get(0);
+            assertEquals(listMock.get(1).getCode(), firtObject.getCode());
+        });
     }
 
 
@@ -152,12 +155,32 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLang(defaultLang);
+        filter.setMaxItemsCache(maxItems);
 
-        ResultDTO data = service.getPackages(filter);
 
-        PackageDTO firtObject = data.getPackages().get(0);
-        assertEquals(listMock.get(0).getUrlTornada().get(defaultLang), firtObject.getUrl());
-        assertEquals(listMock.get(0).getOrganization().getDescriptionTranslated().get(defaultLang),
-                firtObject.getOrganization().getDescription());
+        service.getPackages(filter).subscribe(data -> {
+            PackageDTO firtObject = data.getPackages().get(0);
+            assertEquals(listMock.get(0).getUrlTornada().get(defaultLang), firtObject.getUrl());
+            assertEquals(listMock.get(0).getOrganization().getDescriptionTranslated().get(defaultLang),
+                    firtObject.getOrganization().getDescription());
+        });
+    }
+
+    /**
+     * Metodo que prueba que obtenga el valor adecuado del idioma seleccionado
+     */
+    @Test
+    public void testFindPackageNotFound() {
+
+        thrown.expect(NotFoundException.class);
+        doReturn(new ArrayList<>()).when(apiResult).getResults();
+        doReturn(apiResult).when(dao).getPackages(anyObject());
+
+        FilterParams filter = new FilterParams();
+        filter.setLang(defaultLang);
+        filter.setMaxItemsCache(maxItems);
+
+
+        service.getPackages(filter).block();
     }
 }

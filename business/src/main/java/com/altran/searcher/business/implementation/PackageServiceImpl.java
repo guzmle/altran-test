@@ -7,13 +7,18 @@ import com.altran.searcher.business.domain.ResultDTO;
 import com.altran.searcher.dataaccess.PackageDao;
 import com.altran.searcher.dataaccess.domain.Package;
 import com.altran.searcher.dataaccess.domain.ResultAPI;
+import com.altran.searcher.exceptions.InternalErrorException;
+import com.altran.searcher.exceptions.NotFoundException;
 import com.altran.searcher.utilities.FilterParams;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by guzmle on 17/8/18.
@@ -21,6 +26,8 @@ import java.util.List;
 @Service
 public class PackageServiceImpl implements PackageService {
 
+    private static final Logger logger = LogManager.getLogger(PackageServiceImpl.class);
+    private static final String SEARCH_SUCCESS = "Search Success";
     private final PackageDao dao;
 
     @Value("${config.minLimit}")
@@ -31,33 +38,39 @@ public class PackageServiceImpl implements PackageService {
         this.dao = dao;
     }
 
-    public ResultDTO getPackages(FilterParams filter) {
-        ResultAPI<List<Package>> response = dao.getPackages(filter);
+    public Mono<ResultDTO> getPackages(FilterParams filter) {
+        return Mono.create(emitter -> {
+            try {
+                ResultAPI<List<Package>> response = dao.getPackages(filter);
 
-        int start = filter.getOffset();
-        int limit = filter.getLimit() == 0 ? Integer.parseInt(minLimit) : filter.getLimit();
-        int end = (start + limit) > response.getResults().size() ? response.getResults().size() : (start + limit);
-        List<Package> data = response.getResults().subList(start, end);
+                int start = filter.getOffset() + filter.getLimit() > filter.getMaxItemsCache() ? 0 : filter.getOffset();
+                int limit = filter.getLimit() == 0 ? Integer.parseInt(minLimit) : filter.getLimit();
+                int end = (start + limit) > response.getResults().size() ? response.getResults().size() : (start + limit);
+                List<Package> data = response.getResults().subList(start, end);
 
-        List<PackageDTO> list = new ArrayList<>();
-        for (Package paquete : data) {
+                List<PackageDTO> list = data.stream()
+                        .map(aPackage ->
+                                new PackageDTO(
+                                        aPackage.getCode(),
+                                        new OrganizationDTO(aPackage.getOrganization().getDescriptionTranslated().get(filter.getLang())),
+                                        aPackage.getUrlTornada().get(filter.getLang())
+                                ))
+                        .collect(Collectors.toList());
 
-            PackageDTO obj = new PackageDTO();
-            obj.setCode(paquete.getCode());
-            OrganizationDTO organization = new OrganizationDTO();
-
-            organization.setDescription(paquete.getOrganization().getDescriptionTranslated().get(filter.getLang()));
-            obj.setOrganization(organization);
-
-            obj.setUrl(paquete.getUrlTornada().get(filter.getLang()));
-            list.add(obj);
-        }
-
-        ResultDTO result = new ResultDTO();
-        result.setCount(data.size());
-        result.setOffset(filter.getOffset());
-        result.setTotalCount(response.getCount());
-        result.setPackages(list);
-        return result;
+                if (!list.isEmpty()) {
+                    ResultDTO result = new ResultDTO();
+                    result.setCount(data.size());
+                    result.setOffset(filter.getOffset());
+                    result.setTotalCount(response.getCount());
+                    result.setPackages(list);
+                    logger.info(SEARCH_SUCCESS);
+                    emitter.success(result);
+                } else {
+                    emitter.error(new NotFoundException());
+                }
+            } catch (Exception err) {
+                emitter.error(new InternalErrorException(err.getMessage(), err, filter));
+            }
+        });
     }
 }

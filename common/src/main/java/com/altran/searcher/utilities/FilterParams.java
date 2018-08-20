@@ -1,34 +1,32 @@
 package com.altran.searcher.utilities;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * Created by guzmle on 17/8/18.
+ * Clase que permite representar los datos para filtrar la consulta en el sistema
  */
+@Getter
+@Setter
 public class FilterParams {
     private int offset;
     private int limit;
     private String lang;
+    private int maxItemsCache;
 
-    public int getOffset() {
-        return offset;
+    public FilterParams() {
     }
 
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public String getLang() {
-        return lang;
-    }
-
-    public void setLang(String lang) {
+    public FilterParams(String lang) {
         this.lang = lang;
+    }
+
+    @Override
+    public String toString() {
+        return "FilterParams{" +
+                "offset=" + offset +
+                ", limit=" + limit +
+                ", lang='" + lang + '\'' +
+                '}';
     }
 }

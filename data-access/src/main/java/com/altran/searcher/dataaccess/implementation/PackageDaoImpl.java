@@ -18,7 +18,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Created by guzmle on 17/8/18.
+ * Clase que se encarga de consultar la fuente de datos para obtener la informacion necesaria
  */
 @Component
 public class PackageDaoImpl implements PackageDao {
@@ -28,28 +28,22 @@ public class PackageDaoImpl implements PackageDao {
     @Value("${api.url}")
     private String apiUrl;
 
-    @Value("${config.maxItemsCache}")
-    private String maxItemsCache;
-
     @Autowired
     public PackageDaoImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
     @Override
-    @Cacheable(cacheNames = "packages", key = "#filter.lang", condition = "#filter.limit + #filter.offset <= 50")
+    @Cacheable(cacheNames = "packages", key = "#filter.lang", condition = "#filter.limit + #filter.offset <= #filter.maxItemsCache")
     public ResultAPI<List<Package>> getPackages(FilterParams filter) {
 
-        try {
-            int maxItems = Integer.parseInt(maxItemsCache);
-            int start = filter.getOffset() + filter.getLimit() <= maxItems ? 0 : filter.getOffset();
-            int rows = filter.getOffset() + filter.getLimit() <= maxItems ? maxItems : filter.getLimit();
+        StringBuilder url = new StringBuilder();
+        try (Formatter fmt = new Formatter(url)) {
+            int start = filter.getOffset() + filter.getLimit() <= filter.getMaxItemsCache() ? 0 : filter.getOffset();
+            int rows = filter.getOffset() + filter.getLimit() <= filter.getMaxItemsCache() ?
+                    filter.getMaxItemsCache() : filter.getLimit();
 
-            StringBuilder url = new StringBuilder();
-            Formatter fmt = new Formatter(url);
             fmt.format(apiUrl, rows, start);
-
-
             ResponseAPI<List<Package>> data = restTemplate.exchange(
                     url.toString(),
                     HttpMethod.GET,
@@ -68,4 +62,5 @@ public class PackageDaoImpl implements PackageDao {
             throw new APIException(err.getMessage());
         }
     }
+
 }

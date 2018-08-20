@@ -1,37 +1,14 @@
 package com.altran.searcher.dataaccess.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Created by guzmle on 17/8/18.
- */
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ResultAPI<T> {
     private int count;
     private String sort;
     private T results;
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public String getSort() {
-        return sort;
-    }
-
-    public void setSort(String sort) {
-        this.sort = sort;
-    }
-
-    public T getResults() {
-        return results;
-    }
-
-    public void setResults(T results) {
-        this.results = results;
-    }
 }

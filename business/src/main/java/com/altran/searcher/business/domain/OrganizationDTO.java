@@ -1,16 +1,14 @@
 package com.altran.searcher.business.domain;
 
-/**
- * Created by guzmle on 17/8/18.
- */
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class OrganizationDTO {
     private String description;
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
+    public OrganizationDTO(String description) {
         this.description = description;
     }
 }

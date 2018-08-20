@@ -42,7 +42,6 @@ public class PackageServiceImplITTest {
 
 
         ReflectionTestUtils.setField(dao, "apiUrl", apiUrl);
-        ReflectionTestUtils.setField(dao, "maxItemsCache", "1");
         ReflectionTestUtils.setField(dao, "restTemplate", new RestTemplate());
     }
 
@@ -54,6 +53,7 @@ public class PackageServiceImplITTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(1);
+        filter.setMaxItemsCache(1);
 
         ResultAPI<List<Package>> data = dao.getPackages(filter);
         assertNotNull(data);
@@ -68,6 +68,7 @@ public class PackageServiceImplITTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(1);
+        filter.setMaxItemsCache(1);
 
         ResultAPI<List<Package>> data = dao.getPackages(filter);
 

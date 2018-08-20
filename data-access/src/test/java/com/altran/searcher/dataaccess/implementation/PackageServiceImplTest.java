@@ -1,5 +1,6 @@
 package com.altran.searcher.dataaccess.implementation;
 
+import com.altran.searcher.dataaccess.domain.ErrorMessage;
 import com.altran.searcher.dataaccess.domain.Package;
 import com.altran.searcher.dataaccess.domain.ResponseAPI;
 import com.altran.searcher.dataaccess.domain.ResultAPI;
@@ -30,9 +31,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
-/**
- * Created by guzmle on 18/8/18.
- */
 @RunWith(SpringRunner.class)
 public class PackageServiceImplTest {
 
@@ -47,6 +45,8 @@ public class PackageServiceImplTest {
 
     @Mock
     private ResponseAPI<List<Package>> result;
+    @Mock
+    private ErrorMessage error;
 
     @InjectMocks
     private PackageDaoImpl dao;
@@ -68,7 +68,6 @@ public class PackageServiceImplTest {
 
 
         ReflectionTestUtils.setField(dao, "apiUrl", apiUrl);
-        ReflectionTestUtils.setField(dao, "maxItemsCache", String.valueOf(maxItems));
     }
 
     /**
@@ -90,6 +89,7 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems - minLimit - 1);
 
 
@@ -116,6 +116,7 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems - minLimit);
 
 
@@ -142,6 +143,7 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems + minLimit);
 
 
@@ -163,6 +165,7 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems + minLimit);
 
         dao.getPackages(filter);
@@ -179,11 +182,14 @@ public class PackageServiceImplTest {
 
         doReturn(result).when(response).getBody();
         doReturn(false).when(result).isSuccess();
+        doReturn(error).when(result).getError();
+        doReturn(null).when(error).getMessage();
         doReturn(response).when(restTemplate).exchange(anyString(), any(HttpMethod.class), isNull(),
                 Mockito.<ParameterizedTypeReference<ResponseAPI<List<Package>>>>any());
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems + minLimit);
 
         dao.getPackages(filter);
@@ -203,6 +209,7 @@ public class PackageServiceImplTest {
 
         FilterParams filter = new FilterParams();
         filter.setLimit(minLimit);
+        filter.setMaxItemsCache(maxItems);
         filter.setOffset(maxItems + minLimit);
 
         dao.getPackages(filter);
