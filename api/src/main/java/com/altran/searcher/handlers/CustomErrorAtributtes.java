@@ -1,4 +1,4 @@
-package com.altran.searcher.handles;
+package com.altran.searcher.handlers;
 
 import com.altran.searcher.exceptions.CustomServerException;
 import org.apache.logging.log4j.LogManager;
