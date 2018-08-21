@@ -26,6 +26,7 @@ public class MainRouter {
 
     private static final String LIMIT = "limit";
     private static final String OFFSET = "offset";
+    private static final String LANG = "lang";
 
     @Value("${config.defaultLang}")
     private String defaultLang;
@@ -69,7 +70,11 @@ public class MainRouter {
         Optional<String> offset = request.queryParam(OFFSET);
         offset.ifPresent(s -> params.setOffset(Integer.parseInt(s)));
 
-        if (!request.headers().acceptLanguage().isEmpty()) {
+        Optional<String> lang = request.queryParam(LANG);
+
+        if (lang.isPresent()) {
+            params.setLang(lang.get());
+        } else if (!request.headers().acceptLanguage().isEmpty()) {
             Optional<String> languageHeader = request.headers().acceptLanguage().stream()
                     .filter(line -> !line.getRange().contains("-"))
                     .map(Locale.LanguageRange::getRange)

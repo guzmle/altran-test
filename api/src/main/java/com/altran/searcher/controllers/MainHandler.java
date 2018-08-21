@@ -1,6 +1,6 @@
 package com.altran.searcher.controllers;
 
-import com.altran.searcher.ApplicationConfiguration;
+import com.altran.searcher.config.ApplicationConfig;
 import com.altran.searcher.business.PackageService;
 import com.altran.searcher.utilities.AuditControl;
 import com.altran.searcher.utilities.FilterParams;
@@ -66,7 +66,7 @@ public class MainHandler {
      */
     @Scheduled(fixedDelay = 60000)
     public void cacheEvictionScheduler() {
-        Cache cache = cacheManager.getCache(ApplicationConfiguration.CACHE_NAME);
+        Cache cache = cacheManager.getCache(ApplicationConfig.CACHE_NAME);
         Object nativeCache = cache.getNativeCache();
         Object[] langs = ((ConcurrentHashMap) nativeCache).keySet().toArray();
         cache.clear();

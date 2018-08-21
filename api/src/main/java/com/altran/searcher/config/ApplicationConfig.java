@@ -1,4 +1,4 @@
-package com.altran.searcher;
+package com.altran.searcher.config;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.cache.CacheManager;
@@ -26,7 +26,7 @@ import java.util.List;
  */
 @Configuration
 @PropertySource("classpath:config.properties")
-public class ApplicationConfiguration {
+public class ApplicationConfig {
 
 
     private static final String ALLOWED_HEADERS = "Accept-Language, x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN";
