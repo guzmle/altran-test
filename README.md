@@ -16,18 +16,18 @@ Esta division se hizo separando cada una de ellas en Jar's para garantizar lo si
 
 La solucion tiene integracion con **SonarQube** para la revision  
 
-###Documentacion del API 
+### Documentacion del API 
 
 **https://test17285.docs.apiary.io**
 
 Lo hice por este medio ya que Swagger y Spring RestDoc tienen bugs para integrarse con WebFlux 
 
 
-###Dependencias
+### Dependencias
 - Java 8
 - Docker
 
-###Monitoreo
+### Monitoreo
 
 - Implemente el uso de Spring Boot Admin, el puerto es: **9090**
 - Implemente el uso Actuator para obtenr las trazas de monitoreo
