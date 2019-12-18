@@ -44,7 +44,7 @@ public class PackageServiceImpl implements PackageService {
 
                 int start = filter.getOffset() + filter.getLimit() > filter.getMaxItemsCache() ? 0 : filter.getOffset();
                 int limit = filter.getLimit() == 0 ? Integer.parseInt(minLimit) : filter.getLimit();
-                int end = (start + limit) > response.getResults().size() ? response.getResults().size() : (start + limit);
+                int end = Math.min((start + limit), response.getResults().size());
                 List<Package> data = response.getResults().subList(start, end);
 
                 List<PackageDTO> list = data.stream()
