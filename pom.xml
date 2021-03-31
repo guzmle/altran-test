@@ -23,7 +23,7 @@
         <reactor.version>3.1.8.RELEASE</reactor.version>
         <disruptor.version>3.3.6</disruptor.version>
         <lombok.version>1.18.2</lombok.version>
-        <guava.version>26.0-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <sonar.plugin.version>3.4.0.905</sonar.plugin.version>
         <jacoco.version>0.8.1</jacoco.version>
         <maven.compiler.version>3.8.0</maven.compiler.version>
